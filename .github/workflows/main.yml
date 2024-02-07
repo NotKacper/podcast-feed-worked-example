@@ -1,0 +1,26 @@
+name: Generate Podcast Feeds # name of the workflow
+on: [push] # [push] means that this worflow will be triggered when someone pushes to this github repo branch.
+jobs: 
+  build:
+    runs-on: ubuntu-latest # tells yaml what machine this workflow should be run on, these are cloud computers typically
+    steps: # what tasks the workflow should do
+      - name: Checkout Repo # name of step
+        uses: actions/checkout@v3 # what action the step will use, checkout is very popular (checks out a branch) => @v3 specifies version 3 of this action
+      - name: Setup Python
+        uses: actions/setup-python@v4 # this will setup python on the cloud computer in case it isn't already installed.
+        with: # specifies extra parameter for action to use.
+          python-version: '3.10' # specifying version 3.10 of python be used.
+      - name: Install Dependencies
+        run:  # run allows a string to be passed into the cloud computers terminal to be ran.
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      - name: Run Feed Generator
+        run: python feed.py
+      - name: Push Repo
+        run: 
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git git commit -m "Modified Feed"
+          git push
+        
